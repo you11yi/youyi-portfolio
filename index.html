@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游毅 · 用户运营 / 用户研究</title>
+<style>
+  :root{
+    --paper:#fbf8f1;
+    --ink:#171717;
+    --muted:#77736c;
+    --line:#ded8ce;
+    --orange:#f3a04b;
+    --orange-soft:#f7c88e;
+    --card:#fffdfa;
+    --shadow:0 12px 34px rgba(40,32,22,.055);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",Arial,sans-serif;
+    overflow-x:hidden;
+  }
+  button,a{font:inherit}
+  button{border:0;background:none;cursor:pointer;color:inherit}
+  .site{min-height:100vh}
+  .nav{
+    height:88px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 5.2vw;position:sticky;top:0;z-index:30;
+    background:rgba(251,248,241,.90);backdrop-filter:blur(12px);
+  }
+  .brand{
+    font-weight:900;font-size:30px;line-height:.82;letter-spacing:-2px;
+    width:62px;
+  }
+  .brand span{display:block}
+  .navlinks{display:flex;gap:42px;align-items:center;margin-left:5vw}
+  .navlinks button{
+    font-size:14px;font-weight:650;color:#4c4944;padding:8px 0;position:relative;
+  }
+  .navlinks button.active{color:#111}
+  .navlinks button.active:after{
+    content:"";position:absolute;height:2px;background:#111;left:0;right:0;bottom:0;
+  }
+  .status{display:flex;gap:12px;align-items:center;font-size:13px;font-weight:650;color:#5e5b56}
+  .dot{width:13px;height:13px;background:var(--orange-soft);border-radius:50%}
+
+  main{width:100%}
+  .page{display:none;min-height:calc(100vh - 88px);padding:40px 5.2vw 70px}
+  .page.active{display:block}
+  .home{padding-top:34px}
+  .hero{
+    max-width:1440px;margin:0 auto;
+    display:grid;grid-template-columns:43% 57%;gap:2.5vw;align-items:start;
+  }
+  .leftcol{position:relative;padding-top:8px}
+  .portrait-wrap{
+    width:min(520px,100%);height:620px;position:relative;margin-left:-12px;
+  }
+  .portrait-bg{
+    position:absolute;inset:42px 40px 32px 0;
+    background:linear-gradient(135deg,#f6c98e,#f0b76d);
+    clip-path:polygon(12% 7%,72% 0,96% 20%,100% 62%,82% 93%,48% 100%,12% 92%,0 58%,4% 22%);
+  }
+  .portrait{
+    position:absolute;left:5px;top:70px;width:88%;height:550px;
+    object-fit:cover;object-position:center top;
+    clip-path:polygon(15% 2%,67% 0,90% 13%,98% 46%,89% 76%,66% 95%,39% 100%,12% 91%,2% 65%,5% 25%);
+    filter:saturate(.82) contrast(.95);
+  }
+  .sketch{
+    position:absolute;color:#fff;font-family:"STKaiti","KaiTi",cursive;font-size:34px;
+    transform:rotate(-12deg);left:74%;top:170px;white-space:nowrap;
+  }
+  .identity{padding:6px 0 0 10px}
+  .name-row{display:flex;align-items:center;gap:18px}
+  .name{font-size:36px;font-weight:900;letter-spacing:-1px}
+  .tag{
+    border:1.5px solid var(--orange);border-radius:999px;padding:8px 17px;
+    color:#dc8532;font-family:"STKaiti","KaiTi",cursive;font-size:16px;
+    transform:rotate(-4deg);
+  }
+  .role{font-size:17px;margin-top:18px;font-weight:600}
+  .micro{color:var(--muted);font-size:14px;line-height:1.9;margin-top:10px;max-width:330px}
+  .scribble-line{
+    width:48px;height:12px;border-bottom:3px solid var(--orange);
+    border-radius:50%;transform:rotate(-4deg);margin:10px 0 48px;
+  }
+  .contact-title{
+    font-family:Arial,sans-serif;font-size:13px;font-style:italic;letter-spacing:2px;font-weight:700;
+  }
+  .contact-line{width:48px;border-bottom:3px solid var(--orange);transform:rotate(-4deg);margin:7px 0 20px}
+  .contact{display:flex;gap:28px;flex-wrap:wrap;color:#55514a;font-size:13px}
+  .contact span{display:flex;gap:8px;align-items:center}
+  .icon{width:18px;height:18px;display:inline-flex}
+  .icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  .rightcol{padding:34px 0 0}
+  .slogan{
+    font-family:"STKaiti","KaiTi","DFKai-SB",cursive;
+    font-size:clamp(70px,6.6vw,108px);font-weight:800;line-height:.88;
+    letter-spacing:-5px;max-width:760px;margin:0 0 26px;
+  }
+  .slogan .soft{color:#222}
+  .slogan .accent{color:var(--orange)}
+  .scribble{
+    position:relative;display:inline-block;
+  }
+  .scribble:after{
+    content:"";position:absolute;left:-4%;right:-8%;height:16px;bottom:-10px;
+    border-bottom:5px solid var(--orange);border-radius:50%;
+    transform:rotate(-3deg);
+  }
+  .intro{
+    max-width:590px;font-size:15px;line-height:2;color:#55514b;margin:34px 0 28px;
+  }
+  .visual-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:end}
+  .action-card{
+    height:260px;position:relative;overflow:hidden;border-radius:38px;background:#f0bd82;
+    box-shadow:var(--shadow);
+  }
+  .action-card img{
+    width:100%;height:100%;object-fit:cover;object-position:center 42%;
+    filter:saturate(.9);mix-blend-mode:multiply;
+  }
+  .action-label{
+    position:absolute;left:22px;top:18px;color:#fff;font-size:12px;letter-spacing:1.8px;
+    font-weight:800;background:rgba(23,23,23,.78);padding:7px 10px;border-radius:999px;
+  }
+  .metrics{
+    display:grid;grid-template-columns:1fr 1fr;gap:16px;
+  }
+  .metric{
+    min-height:180px;background:var(--card);border-radius:30px;padding:25px 24px;
+    box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .metric-head{display:flex;align-items:center;gap:12px}
+  .metric-icon{width:42px;height:42px;color:#161616}
+  .metric-icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .metric-num{font-family:"STKaiti","KaiTi",cursive;color:var(--orange);font-size:46px;font-weight:800;line-height:1}
+  .metric-title{font-size:15px;font-weight:750;margin-top:10px}
+  .metric-sub{font-size:12px;color:#92908b;margin-top:5px}
+
+  .home-bottom{
+    max-width:1440px;margin:18px auto 0;display:flex;justify-content:flex-end;
+  }
+  .cta-row{display:flex;gap:12px;align-items:center}
+  .cta{
+    padding:14px 21px;border-radius:999px;background:#171717;color:white;font-weight:700;font-size:13px;
+  }
+  .cta.secondary{background:transparent;color:#222;border:1px solid #cfc8bd}
+  .cta:hover{transform:translateY(-1px)}
+
+  /* Inner pages */
+  .inner{max-width:1240px;margin:0 auto}
+  .eyebrow{font-size:12px;letter-spacing:2px;color:#8c877f;font-weight:800}
+  .page-title{
+    font-family:"STKaiti","KaiTi",cursive;font-size:clamp(70px,8vw,118px);
+    line-height:.88;margin:22px 0 55px;letter-spacing:-4px;
+  }
+  .page-title .accent{color:var(--orange)}
+  .timeline{display:grid;gap:18px}
+  .experience{
+    display:grid;grid-template-columns:170px 1fr 170px;gap:30px;align-items:start;
+    padding:30px 34px;background:var(--card);border-radius:30px;box-shadow:var(--shadow);
+  }
+  .date{font-size:13px;color:#88837b;padding-top:5px}
+  .exp-title{font-size:24px;font-weight:850}
+  .exp-company{font-size:13px;color:#77736c;margin-top:7px}
+  .exp-body{font-size:14px;line-height:1.9;color:#55514b;max-width:650px}
+  .result{font-family:"STKaiti","KaiTi",cursive;font-size:38px;color:var(--orange);text-align:right}
+  .result small{display:block;font-family:inherit;color:#77736c;font-size:12px;line-height:1.5}
+
+
+
+  /* Compact one-page project section */
+  .projects-header{padding:8px 0 48px}
+  .projects-title{
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",Arial,sans-serif;
+    font-size:clamp(56px,6vw,82px);font-weight:900;letter-spacing:-4px;line-height:.95;
+    margin:18px 0 16px;
+  }
+  .projects-subtitle{font-size:14px;line-height:1.8}
+  .editorial-project{padding:0 0 62px}
+  .editorial-title-row{margin-top:20px}
+  .editorial-title-row h3{
+    font-size:clamp(48px,5.2vw,72px);letter-spacing:-4px;
+  }
+  .editorial-summary{font-size:16px;line-height:1.75;max-width:760px;margin:28px 0 30px}
+  .editorial-shot img{
+    max-height:500px;border-radius:24px;object-fit:contain;object-position:center;
+  }
+  .eye-shot{
+    width:58%;min-width:520px;margin-left:auto;margin-right:auto;
+  }
+  .eye-shot img{background:#f5f1ea}
+  .project-meta{padding:22px 0 26px;margin-top:24px}
+  .editorial-body{padding-top:28px;gap:55px}
+  .editorial-body li{font-size:13px;padding-bottom:8px}
+  .result-column{padding-left:28px}
+  .big-result{font-size:64px}
+  .reflection{padding-top:25px}
+  .reflection p{font-size:13px;line-height:1.85}
+  .project-cta{margin-top:22px}
+  .editorial-divider{padding:14px 0 15px}
+  /* Editorial project page — no card containers, structure comes from typography and spacing */
+  .projects-header{padding:12px 0 88px}
+  .projects-title{
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",Arial,sans-serif;
+    font-size:clamp(92px,12vw,178px);font-weight:950;letter-spacing:-9px;line-height:.86;margin:26px 0 26px;
+  }
+  .projects-subtitle{font-size:16px;color:#77736c;max-width:520px;line-height:1.9;margin:0}
+  .editorial-project{padding:0 0 112px}
+  .project-topline{display:flex;justify-content:space-between;gap:20px;align-items:center;border-top:1px solid #d8d1c7;padding-top:13px;color:#8a857d;font-size:11px;font-weight:800;letter-spacing:1.7px}
+  .project-number{color:#171717}
+  .editorial-title-row{display:flex;justify-content:space-between;gap:30px;align-items:flex-end;margin-top:28px}
+  .editorial-title-row h3{
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",Arial,sans-serif;
+    font-size:clamp(58px,7.5vw,112px);font-weight:950;letter-spacing:-6px;line-height:.9;margin:0;
+  }
+  .project-year{font-size:11px;color:#99948c;font-weight:800;letter-spacing:1.5px;padding-bottom:8px;white-space:nowrap}
+  .project-tagline{font-size:14px;color:#aaa59c;margin-top:18px}
+  .editorial-summary{font-size:20px;line-height:1.75;max-width:780px;margin:42px 0 48px;color:#4d4943}
+  .editorial-shot{margin:0;padding:0}
+  .editorial-shot img{
+    display:block;width:100%;height:auto;max-height:690px;object-fit:cover;object-position:top center;
+    border-radius:28px;filter:saturate(.94);background:#ece7df;
+  }
+  .research-shot img{object-position:top center}
+  .editorial-shot figcaption{font-size:10px;letter-spacing:1.5px;color:#9a958d;margin-top:11px}
+  .project-meta{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:25px;
+    padding:31px 0 38px;border-bottom:1px solid #ded8ce;margin-top:38px;
+  }
+  .project-meta div{display:flex;flex-direction:column;gap:9px}
+  .project-meta span,.result-label{font-size:10px;letter-spacing:1.5px;color:#9b968d;font-weight:800}
+  .project-meta strong{font-size:14px;font-weight:750}
+  .editorial-body{display:grid;grid-template-columns:1.5fr .75fr;gap:80px;padding:45px 0 0}
+  .body-column{display:grid;grid-template-columns:1fr 1fr;gap:50px}
+  .editorial-body h4,.reflection h4{font-size:14px;font-weight:900;margin:0 0 18px;letter-spacing:.2px}
+  .editorial-body ul{list-style:none;margin:0;padding:0}
+  .editorial-body li{font-size:14px;line-height:1.9;color:#5e5952;padding:0 0 12px 20px;position:relative}
+  .editorial-body li:before{content:"—";position:absolute;left:0;color:#f0a154;font-weight:900}
+  .result-column{border-left:1px solid #ded8ce;padding-left:35px}
+  .big-result{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",Arial,sans-serif;font-size:82px;line-height:.9;font-weight:950;letter-spacing:-5px;margin:12px 0 4px}
+  .result-desc{font-size:13px;color:#5e5952;margin-bottom:28px}
+  .result-line{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-top:1px solid #e1dbd1;padding:13px 0}
+  .result-line strong{font-size:18px;font-weight:950}
+  .result-line span{font-size:11px;color:#8d8880;text-align:right}
+  .reflection{max-width:850px;padding-top:42px}
+  .reflection p{font-size:15px;line-height:2;color:#5d5851;margin:0}
+  .project-cta{margin-top:34px}
+  .editorial-cta{padding:16px 23px;border-radius:999px;display:inline-flex;gap:14px;align-items:center}
+  .editorial-divider{display:flex;justify-content:space-between;align-items:center;padding:24px 0 25px;border-top:1px solid #d8d1c7;color:#9b968d;font-size:10px;letter-spacing:1.6px;font-weight:800}
+  .editorial-divider span:first-child{color:#171717;font-size:18px}
+  .project-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+
+  .project-showcase{align-items:start}
+  .project-card{padding:22px;min-height:0}
+  .project-cover{
+    height:390px;border-radius:26px;overflow:hidden;position:relative;
+    margin-top:18px;background:#eee9e0;border:1px solid #ebe4da;
+  }
+  .project-cover img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .45s ease;
+  }
+  .project-card:hover .project-cover img{transform:scale(1.025)}
+  .cover-index{
+    position:absolute;left:16px;top:16px;
+    width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:rgba(255,253,250,.92);font-size:12px;font-weight:900;
+  }
+  .project-info{padding:22px 2px 0}
+  .project-info h3{margin:0 0 12px}
+  .project-info p{margin:0;max-width:none}
+  .project-info .project-metrics{margin-top:24px}
+  .project-actions{
+    display:flex;align-items:center;gap:10px;margin-top:22px;padding-top:18px;
+    border-top:1px solid #e7e0d7;
+  }
+  .project-open,.project-download{
+    border-radius:999px;padding:12px 15px;font-size:12px;font-weight:800;
+    text-decoration:none;display:inline-flex;align-items:center;justify-content:center;
+  }
+  .project-open{background:#171717;color:#fff}
+  .project-download{border:1px solid #d7d0c6;color:#333;background:#fffdfa}
+  .project-open:hover,.project-download:hover{transform:translateY(-1px)}
+  .pdf-modal{
+    position:fixed;inset:0;background:rgba(20,18,15,.64);z-index:100;
+    display:none;align-items:center;justify-content:center;padding:24px;
+  }
+  .pdf-modal.show{display:flex}
+  .pdf-dialog{
+    width:min(1180px,96vw);height:min(88vh,900px);background:#fbf8f1;border-radius:28px;
+    overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.22);display:flex;flex-direction:column;
+  }
+  .pdf-head{height:58px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e4ddd3}
+  .pdf-head strong{font-size:13px}
+  .pdf-close{font-size:20px;width:34px;height:34px;border-radius:50%;background:#eee9e0}
+  .pdf-frame{flex:1;border:0;width:100%;background:#fff}
+  .project{
+    background:var(--card);border-radius:36px;padding:32px;min-height:410px;
+    box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .project:before{content:"";position:absolute;width:180px;height:180px;background:#f7c88e;border-radius:50%;right:-55px;top:-60px;opacity:.35}
+  .project-no{font-size:12px;letter-spacing:2px;color:#8c877f;font-weight:800}
+  .project h3{font-family:"STKaiti","KaiTi",cursive;font-size:54px;line-height:.95;margin:22px 0 12px}
+  .project p{font-size:14px;line-height:1.9;color:#5d5952;max-width:530px}
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+  .pill{border:1px solid #d7d0c6;border-radius:999px;padding:8px 11px;font-size:12px}
+  .project-metrics{display:flex;gap:30px;margin-top:30px}
+  .pm strong{font-family:"STKaiti","KaiTi",cursive;font-size:36px;color:var(--orange)}
+  .pm span{display:block;font-size:11px;color:#8a867f;margin-top:2px}
+
+  .about-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:24px}
+  .about-card{background:var(--card);border-radius:34px;padding:34px;box-shadow:var(--shadow)}
+  .about-card h3{font-size:18px;margin:0 0 20px}
+  .about-card p{font-size:15px;line-height:2;color:#5b5750}
+  .skill-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .skill{padding:14px 15px;border:1px solid #e1dbd1;border-radius:18px;font-size:13px;background:#fff}
+  .closing{
+    margin-top:30px;font-family:"STKaiti","KaiTi",cursive;font-size:42px;line-height:1.1;
+  }
+
+
+  /* Final compact overrides */
+  .projects-header{padding:8px 0 48px}
+  .projects-title{font-size:clamp(56px,6vw,82px);letter-spacing:-4px}
+  .editorial-project{padding-bottom:62px}
+  .editorial-title-row h3{font-size:clamp(48px,5.2vw,72px);letter-spacing:-4px}
+  .editorial-summary{font-size:16px;margin:28px 0 30px}
+  .editorial-shot img{max-height:500px;border-radius:24px;object-fit:contain}
+  .eye-shot{width:58%;min-width:520px;margin-left:auto;margin-right:auto}
+  .project-meta{padding:22px 0 26px;margin-top:24px}
+  .editorial-body{padding-top:28px;gap:55px}
+  .big-result{font-size:64px}
+  .reflection{padding-top:25px}
+  .project-cta{margin-top:22px}
+  @media(max-width:1050px){
+    .navlinks{gap:22px}
+    .hero{grid-template-columns:1fr;gap:0}
+    .leftcol{display:grid;grid-template-columns:45% 55%;align-items:end}
+    .portrait-wrap{height:520px}
+    .identity{padding-left:24px}
+    .rightcol{padding-top:0}
+    .experience{grid-template-columns:120px 1fr}
+    .result{text-align:left;grid-column:2}
+  }
+
+  @media(max-width:900px){
+    .projects-header{padding-bottom:65px}
+    .projects-title{font-size:96px;letter-spacing:-5px}
+    .editorial-title-row h3{font-size:70px;letter-spacing:-4px}
+    .editorial-body{grid-template-columns:1fr;gap:45px}
+    .result-column{border-left:0;border-top:1px solid #ded8ce;padding:28px 0 0}
+  }
+  @media(max-width:720px){
+    .projects-header{padding-bottom:38px}
+    .projects-title{font-size:58px;letter-spacing:-3px}
+    .editorial-title-row h3{font-size:50px;letter-spacing:-3px}
+    .editorial-summary{font-size:15px;margin:24px 0}
+    .eye-shot{width:100%;min-width:0}
+    .editorial-shot img{max-height:360px}
+
+
+    .projects-title{font-size:64px;letter-spacing:-3px}
+    .projects-subtitle{font-size:14px}
+    .project-topline{align-items:flex-start;flex-direction:column;gap:8px}
+    .editorial-title-row{display:block}
+    .editorial-title-row h3{font-size:58px;letter-spacing:-3px}
+    .project-year{display:block;margin-top:14px}
+    .editorial-summary{font-size:17px;margin:30px 0 34px}
+    .editorial-shot img{border-radius:22px}
+    .project-meta{grid-template-columns:1fr;gap:18px}
+    .body-column{grid-template-columns:1fr;gap:35px}
+    .editorial-project{padding-bottom:80px}
+    .project-cover{height:300px}
+    .project-actions{flex-wrap:wrap}
+    .nav{height:auto;min-height:76px;padding:18px 20px;flex-wrap:wrap;gap:12px}
+    .navlinks{order:3;width:100%;overflow:auto;gap:24px;margin:0;padding-bottom:3px}
+    .status{margin-left:auto}
+    .page{padding:24px 20px 55px}
+    .leftcol{display:block}
+    .portrait-wrap{height:470px}
+    .portrait{height:450px}
+    .slogan{font-size:64px;letter-spacing:-3px}
+    .visual-row{grid-template-columns:1fr}
+    .metrics{grid-template-columns:1fr 1fr}
+    .metric{min-height:150px;padding:18px}
+    .metric-num{font-size:38px}
+    .project-grid,.about-grid{grid-template-columns:1fr}
+    .experience{grid-template-columns:1fr}
+    .result{grid-column:auto}
+    .contact{gap:14px}
+  }
+</style>
+</head>
+<body>
+<div class="site">
+<header class="nav">
+  <button class="brand" onclick="showPage('home')"><span>YU</span><span>YI</span></button>
+  <nav class="navlinks">
+    <button data-page="home" class="active" onclick="showPage('home')">首页</button>
+    <button data-page="work" onclick="showPage('work')">工作经历</button>
+    <button data-page="projects" onclick="showPage('projects')">项目经历</button>
+    <button data-page="intern" onclick="showPage('intern')">实习经历</button>
+    <button data-page="about" onclick="showPage('about')">关于我</button>
+  </nav>
+  <div class="status"><span class="dot"></span> OPEN TO WORK</div>
+</header>
+
+<main>
+<section id="home" class="page active home">
+  <div class="hero">
+    <div class="leftcol">
+      <div>
+        <div class="portrait-wrap">
+          <div class="portrait-bg"></div>
+          <img class="portrait" src="assets/avatar.jpg" alt="游毅个人头像">
+          <div class="sketch">USER × BEHAVIOR</div>
+        </div>
+        <div class="identity">
+          <div class="name-row">
+            <div class="name">游毅</div>
+            <div class="tag">USER ×<br>BEHAVIOR</div>
+          </div>
+          <div class="role">用户运营 / 用户研究</div>
+          <div class="micro">用洞察理解用户，用增长创造价值。</div>
+          <div class="scribble-line"></div>
+          <div class="contact-title">CONTACT</div>
+          <div class="contact-line"></div>
+          <div class="contact">
+            <span><i class="icon"><svg viewBox="0 0 24 24"><path d="M5 4l4 1-2 4c2 3 4 5 7 7l4-2 1 4c0 1-1 2-2 2C10 20 4 14 4 7c0-2 0-3 1-3z"/></svg></i>158 2730 6521</span>
+            <span><i class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></i>3588025166@qq.com</span>
+            <span><i class="icon"><svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-12a7 7 0 1 0-14 0c0 6 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg></i>武汉</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rightcol">
+      <h1 class="slogan">
+        把用户<br>
+        <span class="accent scribble">看见</span><br>
+        变成用户<br>
+        <span class="accent scribble">行动</span>
+      </h1>
+      <p class="intro">
+        2年用户运营经验，心理学硕士背景，擅长用户洞察、内容运营、增长策略与数据分析。
+        在教育、内容创作与研究项目中，驱动用户增长与转化，把数据与洞察转化为可落地的业务结果。
+      </p>
+
+      <div class="visual-row">
+        <div class="action-card">
+          <img src="assets/action.png" alt="用户行动视觉">
+          <div class="action-label">USER → ACTION</div>
+        </div>
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-head">
+              <div class="metric-icon"><svg viewBox="0 0 48 48"><path d="M4 24s7-12 20-12 20 12 20 12-7 12-20 12S4 24 4 24z"/><circle cx="24" cy="24" r="5"/><path d="M9 13l-3-4M39 13l3-4"/></svg></div>
+              <div class="metric-num">×10</div>
+            </div>
+            <div><div class="metric-title">内容曝光提升</div><div class="metric-sub">自然流量增长项目</div></div>
+          </div>
+          <div class="metric">
+            <div class="metric-head">
+              <div class="metric-icon"><svg viewBox="0 0 48 48"><path d="M8 10h32v22H19l-8 7v-7H8z"/><path d="M15 19h18M15 25h12"/></svg></div>
+              <div class="metric-num">62%</div>
+            </div>
+            <div><div class="metric-title">私信留资率提升</div><div class="metric-sub">30% → 62%</div></div>
+          </div>
+          <div class="metric">
+            <div class="metric-head">
+              <div class="metric-icon"><svg viewBox="0 0 48 48"><path d="M10 17h28v25H10z"/><path d="M16 17v-5a8 8 0 0 1 16 0v5"/><path d="m20 29 3 3 6-7"/></svg></div>
+              <div class="metric-num">≥4单</div>
+            </div>
+            <div><div class="metric-title">月度成交达成</div><div class="metric-sub">稳定付费转化目标</div></div>
+          </div>
+          <div class="metric">
+            <div class="metric-head">
+              <div class="metric-icon"><svg viewBox="0 0 48 48"><path d="M7 34 18 24l8 6 15-18"/><path d="M34 12h7v7"/></svg></div>
+              <div class="metric-num">300W+</div>
+            </div>
+            <div><div class="metric-title">业务增长 GMV</div><div class="metric-sub">增长策略落地</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="home-bottom">
+    <div class="cta-row">
+      <button class="cta" onclick="showPage('projects')">查看项目作品 →</button>
+      <button class="cta secondary" onclick="location.href='tel:15827306521'">电话联系</button>
+      <button class="cta secondary" onclick="location.href='mailto:3588025166@qq.com'">发送邮件</button>
+    </div>
+  </div>
+</section>
+
+<section id="work" class="page">
+  <div class="inner">
+    <div class="eyebrow">01 / WORK EXPERIENCE</div>
+    <h2 class="page-title">把策略<br><span class="accent">落成结果</span></h2>
+    <div class="timeline">
+      <article class="experience">
+        <div class="date">2024.08 — 2026.04</div>
+        <div><div class="exp-title">增长运营</div><div class="exp-company">雪球课堂 · 互联网教育</div>
+          <div class="exp-body">负责新增用户数与转化率双指标；周度数据复盘与月度 OKR 拆解，动态调整增长策略；搭建 RFM 模型与用户标签体系，制定拉新、激活、转化、留存分层策略；联动产品、教研、设计、数据团队推进需求、上线与复盘。</div>
+        </div>
+        <div class="result">300W+<small>业务 GMV 增长</small></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="intern" class="page">
+  <div class="inner">
+    <div class="eyebrow">03 / INTERNSHIP</div>
+    <h2 class="page-title">从真实用户<br><span class="accent">开始理解</span></h2>
+    <div class="timeline">
+      <article class="experience">
+        <div class="date">2023.09 — 2025.06</div>
+        <div><div class="exp-title">用户研究</div><div class="exp-company">武汉体育学院 · 校内实践</div>
+          <div class="exp-body">通过问卷与半结构化访谈收集学生需求，累计有效样本 1000+ 份，输出用户画像与问题洞察；基于洞察优化心理服务流程，组织 30+ 场活动并持续收集体验反馈迭代。</div>
+        </div>
+        <div class="result">1000+<small>有效样本</small></div>
+      </article>
+      <article class="experience">
+        <div class="date">2023.07 — 2024.01</div>
+        <div><div class="exp-title">用户运营</div><div class="exp-company">时时同云科技（成都）有限责任公司</div>
+          <div class="exp-body">面向 B 端商户开展需求收集与痛点梳理，识别高频需求与服务流程问题；协同渠道团队推进问题处理，跟踪用户问题从反馈到解决的完整闭环。</div>
+        </div>
+        <div class="result">闭环<small>反馈 → 解决</small></div>
+      </article>
+      <article class="experience">
+        <div class="date">2022.04 — 2022.07</div>
+        <div><div class="exp-title">新媒体运营</div><div class="exp-company">武汉精诚添懿健康咨询有限公司</div>
+          <div class="exp-body">运营小红书与抖音账号，围绕用户需求做内容获客与转化；通过内容选题、互动与留资承接形成完整链路。</div>
+        </div>
+        <div class="result">10W+<small>单条抖音播放</small></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="projects" class="page">
+  <div class="inner project-editorial">
+    <header class="projects-header">
+      <div class="eyebrow">02 / SELECTED PROJECTS</div>
+      <h2 class="page-title projects-title">项目经历</h2>
+      <p class="projects-subtitle">从用户洞察出发，把问题拆解成策略，再把策略落成可验证的增长结果。</p>
+    </header>
+
+    <article class="editorial-project">
+      <div class="project-topline">
+        <span class="project-number">PROJECT 01</span>
+        <span class="project-type">USER GROWTH · CONTENT · CONVERSION</span>
+      </div>
+
+      <div class="editorial-title-row">
+        <h3>0成本自然流量增长</h3>
+        <span class="project-year">CASE / 01</span>
+      </div>
+
+      <div class="project-tagline">小红书内容获客与私域转化链路设计</div>
+
+      <p class="editorial-summary">
+        从真实用户需求出发，用专业内容替代广告预算，建立「曝光 → 互动 → 私信 → 私域 → 成交」的自然增长闭环。
+      </p>
+
+      <figure class="editorial-shot">
+        <img src="assets/project1-cover.png" alt="小红书0成本自然流量增长案例首页">
+        <figcaption>CASE COVER / 小红书 0 成本自然流量增长</figcaption>
+      </figure>
+
+      <div class="project-meta">
+        <div><span>角色</span><strong>用户运营 / 增长策略</strong></div>
+        <div><span>约束</span><strong>0 元广告预算</strong></div>
+        <div><span>工具</span><strong>小红书 · Excel · AI</strong></div>
+      </div>
+
+      <div class="editorial-body">
+        <div class="body-column">
+          <section>
+            <h4>业务挑战</h4>
+            <ul>
+              <li>预算有限，需要寻找可持续的自然获客方式。</li>
+              <li>用户决策链路长，曝光并不等于咨询，更不等于成交。</li>
+              <li>内容需要同时承担「被看见」与「建立信任」两项任务。</li>
+            </ul>
+          </section>
+
+          <section>
+            <h4>核心策略</h4>
+            <ul>
+              <li>从用户真实提问中提炼高频需求，围绕搜索意图建立内容选题。</li>
+              <li>用专业、可验证的信息建立内容信任，再设计评论区与私信承接。</li>
+              <li>持续复盘曝光、互动、私信与成交数据，迭代选题与转化路径。</li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="result-column">
+          <div class="result-label">QUANTIFIED RESULT</div>
+          <div class="big-result">×10</div>
+          <div class="result-desc">内容曝光提升</div>
+          <div class="result-line"><strong>≥4 单</strong><span>月度成交</span></div>
+          <div class="result-line"><strong>0 元</strong><span>广告投放预算</span></div>
+        </div>
+      </div>
+
+      <div class="reflection">
+        <h4>复盘思考</h4>
+        <p>这次项目让我确认：低预算增长的核心不是「发更多内容」，而是让内容与用户真实需求发生匹配，并把注意力进一步导向下一步行动。</p>
+      </div>
+
+      <div class="project-cta">
+        <button class="cta editorial-cta" onclick="openPdf('assets/project1-xhs.pdf')">查看完整案例 PDF <span>↗</span></button>
+      </div>
+    </article>
+
+    <div class="editorial-divider"><span>02</span><span>USER RESEARCH / BEHAVIOR</span></div>
+
+    <article class="editorial-project">
+      <div class="project-topline">
+        <span class="project-number">PROJECT 02</span>
+        <span class="project-type">USER RESEARCH · EYE TRACKING · DECISION</span>
+      </div>
+
+      <div class="editorial-title-row">
+        <h3>从“看见”到“行动”</h3>
+        <span class="project-year">CASE / 02</span>
+      </div>
+
+      <div class="project-tagline">用户注意力与决策行为研究</div>
+
+      <p class="editorial-summary">
+        研究用户如何看见信息、形成判断并做出行动，把心理学实验中的行为洞察翻译为内容与产品中的决策设计。
+      </p>
+
+      <figure class="editorial-shot research-shot eye-shot">
+        <img src="assets/project2-eye.png" alt="眼动研究视觉元素">
+        <figcaption>CASE COVER / 从“看见”到“行动” · 用户研究 Case</figcaption>
+      </figure>
+
+      <div class="project-meta">
+        <div><span>角色</span><strong>用户研究 / 实验设计</strong></div>
+        <div><span>研究对象</span><strong>大学生篮球运动员</strong></div>
+        <div><span>工具</span><strong>眼动实验 · 问卷 · 行为数据</strong></div>
+      </div>
+
+      <div class="editorial-body">
+        <div class="body-column">
+          <section>
+            <h4>业务挑战</h4>
+            <ul>
+              <li>用户「看到了」并不意味着真正理解，更不代表会继续行动。</li>
+              <li>需要识别注意力进入、信息加工与决策之间的关键摩擦。</li>
+              <li>研究结论必须能够被转译成实际的内容与产品策略。</li>
+            </ul>
+          </section>
+
+          <section>
+            <h4>核心策略</h4>
+            <ul>
+              <li>结合眼动实验与行为指标，观察用户的视觉注意与决策过程。</li>
+              <li>从注意入口、认知负荷与信息层级提炼可解释的用户洞察。</li>
+              <li>将研究结果转化为首屏优先级、信息层级、降低决策摩擦等策略。</li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="result-column">
+          <div class="result-label">RESEARCH OUTPUT</div>
+          <div class="big-result">3</div>
+          <div class="result-desc">关键用户洞察</div>
+          <div class="result-line"><strong>4 条</strong><span>可落地业务策略</span></div>
+          <div class="result-line"><strong>193ms</strong><span>专家组首次注视示例</span></div>
+        </div>
+      </div>
+
+      <div class="reflection">
+        <h4>复盘思考</h4>
+        <p>研究的价值不只是得到一个结论，而是建立「观察 → 解释 → 策略 → 验证」的完整链路，让用户行为真正参与到产品与运营决策中。</p>
+      </div>
+
+      <div class="project-cta">
+        <button class="cta editorial-cta" onclick="openPdf('assets/project2-user-research.pdf')">查看完整案例 PDF <span>↗</span></button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="about" class="page">
+  <div class="inner">
+    <div class="eyebrow">04 / ABOUT ME</div>
+    <h2 class="page-title">用户 × 行为<br><span class="accent">× 增长</span></h2>
+    <div class="about-grid">
+      <div class="about-card">
+        <h3>我擅长解决什么问题？</h3>
+        <p>我习惯从用户行为出发，而不是从“我要做什么内容”出发。通过问卷、访谈、A/B 实验、眼动实验与数据分析，找到用户真正的需求和决策阻力，再把洞察翻译成内容、产品与增长动作。</p>
+        <p>我的优势是把心理学研究能力与互联网运营结合起来：既能理解“用户为什么这样做”，也能继续追问“那业务下一步应该怎么改”。</p>
+        <div class="closing">Attention → Understanding → Decision → Action</div>
+      </div>
+      <div class="about-card">
+        <h3>能力工具箱</h3>
+        <div class="skill-list">
+          <div class="skill">问卷设计</div><div class="skill">半结构化访谈</div>
+          <div class="skill">A/B 实验</div><div class="skill">眼动实验</div>
+          <div class="skill">用户画像</div><div class="skill">漏斗分析</div>
+          <div class="skill">SPSS / Excel</div><div class="skill">E-prime / Amos</div>
+          <div class="skill">Mplus</div><div class="skill">AI 工具提效</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="pdfModal" class="pdf-modal" onclick="if(event.target===this) closePdf()">
+  <div class="pdf-dialog">
+    <div class="pdf-head">
+      <strong id="pdfTitle">PROJECT PDF</strong>
+      <button class="pdf-close" onclick="closePdf()">×</button>
+    </div>
+    <iframe id="pdfFrame" class="pdf-frame" title="项目 PDF 预览"></iframe>
+  </div>
+</div>
+</main>
+</div>
+
+<script>
+
+function openPdf(src){
+  const modal=document.getElementById('pdfModal');
+  const frame=document.getElementById('pdfFrame');
+  const title=document.getElementById('pdfTitle');
+  frame.src=src;
+  title.textContent=src.includes('project1') ? 'PROJECT 01 · 小红书 0成本自然流量增长' : 'PROJECT 02 · 从看见到行动';
+  modal.classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closePdf(){
+  const modal=document.getElementById('pdfModal');
+  const frame=document.getElementById('pdfFrame');
+  modal.classList.remove('show');
+  frame.src='';
+  document.body.style.overflow='';
+}
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const page=document.getElementById(id);
+  if(page) page.classList.add('active');
+  document.querySelectorAll('.navlinks button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.page===id);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
